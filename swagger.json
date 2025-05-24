@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/api",
+      "url": "http://localhost:3000/api-docs",
       "description": "Local server"
     },
     {
-      "url": "https://your-render-url.onrender.com/api",
+      "url": "https://project-2-part-1-crud-operations.onrender.com/api-docs",
       "description": "Production server"
     }
   ],

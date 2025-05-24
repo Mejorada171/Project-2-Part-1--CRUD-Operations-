@@ -1,35 +1,28 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
+const cors = require('cors');
+
+const countryRoutes = require('./routes/countries');
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error(err.message));
 
 const app = express();
-const port = process.env.PORT || 3000;
-
+app.use(cors());
 app.use(express.json());
 
-// Root route
 app.get('/', (req, res) => {
-  res.send('Hello! Your server is working.');
+  res.send('Welcome to the Countries API');
 });
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log('✅ Connected to MongoDB');
-    app.listen(port, () => {
-      console.log(`🚀 Server running on http://localhost:${port}`);
-    });
-  })
-  .catch((error) => {
-    console.error('❌ MongoDB connection error:', error);
-  });
+app.use('/api/countries', countryRoutes);
 
-
-const specs = swaggerJsdoc({
-  definition: { openapi: '3.0.0', info: { title: 'CRUD API', version: '1.0.0' } },
-  apis: ['./routes/*.js']   // <-- JSDoc comments live here
+app.use((err, _, res, __) => {          // global error handler
+  res.status(err.status || 500).json({ message: err.message });
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.listen(process.env.PORT, () =>
+  console.log(`API running on http://localhost:${process.env.PORT}`)
+);
